@@ -1,0 +1,43 @@
+# Build outputs
+bin/
+obj/
+out/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Rider / VSCode / JetBrains
+.vscode/
+.idea/
+*.sln.iml
+
+# ASP.NET & EF Core
+appsettings.Development.json
+appsettings.Local.json
+secrets.json
+
+# Dotnet tools & packages
+*.nupkg
+*.snupkg
+.nuget/
+packages/
+.vs/
+*.dbmdl
+
+# Logs
+*.log
+logs/
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Environment config
+.env
+.env.*
+
+#local development
+appsettings.Development.json

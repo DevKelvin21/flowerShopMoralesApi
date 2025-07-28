@@ -1,0 +1,6 @@
+@flowerShopMoralesApi_HostAddress = http://localhost:5062
+
+GET {{flowerShopMoralesApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
