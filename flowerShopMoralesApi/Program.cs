@@ -31,6 +31,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString));
 
 builder.Services.AddScoped<ITransactionService, TransactionService>();
+builder.Services.AddScoped<ITranslationService, OpenAiTranslationService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
