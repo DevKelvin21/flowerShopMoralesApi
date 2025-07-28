@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using flowerShopMoralesApi.Api.DTOs;
 using flowerShopMoralesApi.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 
 namespace flowerShopMoralesApi.Api.Controllers;
 
@@ -17,6 +18,7 @@ public class TranslationController : ControllerBase
         _translationService = translationService;
     }
 
+    [Authorize]
     [HttpPost("translate-text")]
     public async Task<ActionResult<TranslateTextResponse>> Translate([FromBody] TranslateTextRequest request)
     {

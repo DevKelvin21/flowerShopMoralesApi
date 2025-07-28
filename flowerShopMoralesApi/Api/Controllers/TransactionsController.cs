@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using flowerShopMoralesApi.Api.DTOs;
 using flowerShopMoralesApi.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 
 
 namespace flowerShopMoralesApi.Api.Controllers
@@ -17,6 +18,7 @@ namespace flowerShopMoralesApi.Api.Controllers
             _transactionService = transactionService;
         }
 
+        [Authorize]
         [HttpPost("sale")]
         public async Task<IActionResult> CreateSale([FromBody] CreateSaleTransactionRequest request)
         {
