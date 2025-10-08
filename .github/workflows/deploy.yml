@@ -45,4 +45,5 @@ jobs:
           --memory 512Mi \
           --port 8080 \
           --timeout 300s \
-          --set-env-vars ASPNETCORE_ENVIRONMENT=Production
+          --set-env-vars ASPNETCORE_ENVIRONMENT=Production,DB_PROVIDER=Postgres \
+          --set-secrets CONNECTION_STRING=db-connection-string:latest

@@ -16,16 +16,20 @@ string LoadSecret(string secretId)
     return result.Payload?.Data?.ToStringUtf8() ?? throw new InvalidOperationException($"Secret {secretId} not found or is null.");
 }
 
-string connectionString;
+string? connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
 
-if (builder.Environment.IsDevelopment())
+if (string.IsNullOrWhiteSpace(connectionString))
 {
-    connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
-    ?? throw new InvalidOperationException("DefaultConnection string is not defined in the configuration.");
-}
-else
-{
-    connectionString = LoadSecret("db-connection-string");
+    if (builder.Environment.IsDevelopment())
+    {
+        connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+            ?? throw new InvalidOperationException("DefaultConnection string is not defined in the configuration.");
+    }
+    else
+    {
+        // Fallback to Secret Manager in Production if env var not provided via Cloud Run --set-secrets
+        connectionString = LoadSecret("db-connection-string");
+    }
 }
 
 var dbProvider = Environment.GetEnvironmentVariable("DB_PROVIDER")
