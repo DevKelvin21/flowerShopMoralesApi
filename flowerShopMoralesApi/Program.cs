@@ -28,8 +28,21 @@ else
     connectionString = LoadSecret("db-connection-string");
 }
 
+var dbProvider = Environment.GetEnvironmentVariable("DB_PROVIDER")
+    ?? (builder.Environment.IsDevelopment() ? "Sqlite" : "Postgres");
+
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(connectionString));
+{
+    if (string.Equals(dbProvider, "Sqlite", StringComparison.OrdinalIgnoreCase))
+    {
+        var sqlitePath = builder.Configuration.GetValue<string>("Sqlite:DataSource") ?? "./data/app.db";
+        options.UseSqlite($"Data Source={sqlitePath}");
+    }
+    else
+    {
+        options.UseNpgsql(connectionString);
+    }
+});
 
 builder.Services.AddScoped<ITransactionService, TransactionService>();
 builder.Services.AddScoped<ITranslationService, OpenAiTranslationService>();
