@@ -43,6 +43,6 @@ jobs:
           --platform managed \
           --allow-unauthenticated \
           --memory 512Mi \
-          --port 80 \
+          --port 8080 \
           --timeout 300s \
           --set-env-vars ASPNETCORE_ENVIRONMENT=Production
