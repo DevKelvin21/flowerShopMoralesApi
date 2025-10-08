@@ -136,7 +136,7 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-app.UseHttpsRedirection();
+// HTTPS redirection disabled - Cloud Run handles HTTPS termination
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
