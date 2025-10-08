@@ -3,12 +3,14 @@ using Microsoft.AspNetCore.Mvc;
 using flowerShopMoralesApi.Api.DTOs;
 using flowerShopMoralesApi.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using Asp.Versioning;
 
 
 namespace flowerShopMoralesApi.Api.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [ApiVersion("1.0")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     public class TransactionsController : ControllerBase
     {
         private readonly ITransactionService _transactionService;
@@ -19,7 +21,8 @@ namespace flowerShopMoralesApi.Api.Controllers
         }
 
         [Authorize]
-        [HttpPost("sale")]
+        [HttpPost("sale", Name = "CreateSale")]
+        [MapToApiVersion("1.0")]
         public async Task<IActionResult> CreateSale([FromBody] CreateSaleTransactionRequest request)
         {
             try

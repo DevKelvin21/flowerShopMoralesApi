@@ -4,11 +4,13 @@ using Microsoft.AspNetCore.Mvc;
 using flowerShopMoralesApi.Api.DTOs;
 using flowerShopMoralesApi.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using Asp.Versioning;
 
 namespace flowerShopMoralesApi.Api.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[ApiVersion("1.0")]
+[Route("api/v{version:apiVersion}/[controller]")]
 public class TranslationController : ControllerBase
 {
     private readonly ITranslationService _translationService;
@@ -19,7 +21,8 @@ public class TranslationController : ControllerBase
     }
 
     [Authorize]
-    [HttpPost("translate-text")]
+    [HttpPost("translate-text", Name = "TranslateText")]
+    [MapToApiVersion("1.0")]
     public async Task<ActionResult<TranslateTextResponse>> Translate([FromBody] TranslateTextRequest request)
     {
         if (string.IsNullOrWhiteSpace(request.Prompt))

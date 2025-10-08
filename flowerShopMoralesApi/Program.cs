@@ -3,8 +3,12 @@ using flowerShopMoralesApi.Application.Interfaces;
 using flowerShopMoralesApi.Application.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using Microsoft.Extensions.Options;
+using Swashbuckle.AspNetCore.SwaggerGen;
 using Google.Cloud.SecretManager.V1;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Asp.Versioning;
+using Asp.Versioning.ApiExplorer;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -53,10 +57,25 @@ builder.Services.AddScoped<ITranslationService, OpenAiTranslationService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+
+builder.Services
+    .AddApiVersioning(options =>
+    {
+        options.ReportApiVersions = true;
+        options.DefaultApiVersion = new ApiVersion(1, 0);
+        options.AssumeDefaultVersionWhenUnspecified = true;
+        options.ApiVersionReader = ApiVersionReader.Combine(
+            new UrlSegmentApiVersionReader()
+        );
+    })
+    .AddApiExplorer(options =>
+    {
+        options.GroupNameFormat = "'v'VVV";
+        options.SubstituteApiVersionInUrl = true;
+    });
+
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "FlowerShop API", Version = "v1" });
-
     var securityScheme = new OpenApiSecurityScheme
     {
         Name = "Authorization",
@@ -83,6 +102,8 @@ builder.Services.AddSwaggerGen(c =>
     c.AddSecurityRequirement(securityRequirement);
 });
 
+builder.Services.ConfigureOptions<ConfigureSwaggerOptions>();
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -104,10 +125,14 @@ var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger(options => { });
+    var provider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
+    app.UseSwagger(c => { });
     app.UseSwaggerUI(c =>
     {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "FlowerShop API v1");
+        foreach (var desc in provider.ApiVersionDescriptions)
+        {
+            c.SwaggerEndpoint($"/swagger/{desc.GroupName}/swagger.json", $"FlowerShop API {desc.GroupName.ToUpperInvariant()}");
+        }
     });
 }
 
@@ -117,3 +142,25 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+internal sealed class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
+{
+    private readonly IApiVersionDescriptionProvider _provider;
+
+    public ConfigureSwaggerOptions(IApiVersionDescriptionProvider provider)
+    {
+        _provider = provider;
+    }
+
+    public void Configure(SwaggerGenOptions options)
+    {
+        foreach (var description in _provider.ApiVersionDescriptions)
+        {
+            options.SwaggerDoc(description.GroupName, new OpenApiInfo
+            {
+                Title = "FlowerShop API",
+                Version = description.ApiVersion.ToString()
+            });
+        }
+    }
+}
